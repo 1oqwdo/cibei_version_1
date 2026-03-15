@@ -21,7 +21,7 @@ public class AuthController {
     @PostMapping("/send-code")
     public Result<Void> sendCode(@RequestBody java.util.Map<String, String> body) {
         String phone = body.get("phone");
-        if (phone == null || phone.isBlank()) {
+        if (phone == null || phone.trim().isEmpty()) {
             return Result.fail(400, "手机号不能为空");
         }
         return authService.sendCode(phone);

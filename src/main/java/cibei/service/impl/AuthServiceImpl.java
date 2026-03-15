@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Result<Void> sendCode(String phone) {
-        if (phone == null || !phone.matches("^1[3-9]\\d{9}$")) {
+        if (isEmpty(phone) || !phone.matches("^1[3-9]\\d{9}$")) {
             return Result.fail(400, "手机号格式不正确");
         }
         // 生产环境：调用短信服务商 API 发送真实验证码
@@ -43,16 +43,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Result<Void> register(RegisterRequest req) {
         // 1. 参数校验
-        if (req.getPhone() == null || req.getPhone().isBlank()) {
+        if (isEmpty(req.getPhone())) {
             return Result.fail(400, "手机号不能为空");
         }
         if (!req.getPhone().matches("^1[3-9]\\d{9}$")) {
             return Result.fail(400, "手机号格式不正确");
         }
-        if (req.getCode() == null || req.getCode().isBlank()) {
+        if (isEmpty(req.getCode())) {
             return Result.fail(400, "验证码不能为空");
         }
-        if (req.getPassword() == null || req.getPassword().isBlank()) {
+        if (isEmpty(req.getPassword())) {
             return Result.fail(400, "密码不能为空");
         }
         if (req.getPassword().length() < 6 || req.getPassword().length() > 20) {
@@ -92,6 +92,10 @@ public class AuthServiceImpl implements AuthService {
         CODE_STORE.remove(req.getPhone());
 
         return Result.ok(null);
+    }
+
+    private boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
     }
 
     /**

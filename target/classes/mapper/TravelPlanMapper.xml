@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cibei.mapper.TravelPlanMapper">
+
+    <resultMap id="TravelPlanResultMap" type="cibei.entity.TravelPlan">
+        <id     property="id"            column="id"/>
+        <result property="userId"        column="user_id"/>
+        <result property="destination"   column="destination"/>
+        <result property="planDetails"   column="plan_details"/>
+        <result property="isCurrent"     column="is_current"/>
+        <result property="generatedByAi" column="generated_by_ai"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+    </resultMap>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cibei.entity.TravelPlan">
+        INSERT INTO travel_plans (id, user_id, destination, plan_details, is_current, generated_by_ai, created_at, updated_at)
+        VALUES (#{id}, #{userId}, #{destination}, #{planDetails}, #{isCurrent}, #{generatedByAi}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="String" resultMap="TravelPlanResultMap">
+        SELECT * FROM travel_plans WHERE id = #{id}
+    </select>
+
+    <!-- 查询用户所有计划 -->
+    <select id="selectByUserId" parameterType="String" resultMap="TravelPlanResultMap">
+        SELECT * FROM travel_plans WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
+    <!-- 查询用户当前选中的计划 -->
+    <select id="selectCurrentByUserId" parameterType="String" resultMap="TravelPlanResultMap">
+        SELECT * FROM travel_plans WHERE user_id = #{userId} AND is_current = true LIMIT 1
+    </select>
+
+    <!-- 更新计划（动态） -->
+    <update id="update" parameterType="cibei.entity.TravelPlan">
+        UPDATE travel_plans
+        <set>
+            <if test="destination   != null">destination    = #{destination},</if>
+            <if test="planDetails   != null">plan_details   = #{planDetails},</if>
+            <if test="isCurrent     != null">is_current     = #{isCurrent},</if>
+            <if test="generatedByAi != null">generated_by_ai = #{generatedByAi},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 清除用户所有计划的 is_current 标记（切换当前计划前调用） -->
+    <update id="clearCurrentByUserId" parameterType="String">
+        UPDATE travel_plans SET is_current = false WHERE user_id = #{userId}
+    </update>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteById" parameterType="String">
+        DELETE FROM travel_plans WHERE id = #{id}
+    </delete>
+
+    <!-- 删除用户所有计划 -->
+    <delete id="deleteByUserId" parameterType="String">
+        DELETE FROM travel_plans WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cibei.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="cibei.entity.User">
+        <id     property="id"        column="id"/>
+        <result property="openid"    column="openid"/>
+        <result property="phone"     column="phone"/>
+        <result property="password"  column="password"/>
+        <result property="nickname"  column="nickname"/>
+        <result property="avatarUrl" column="avatar_url"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="lastLogin" column="last_login"/>
+    </resultMap>
+
+    <!-- 新增用户 -->
+    <insert id="insert" parameterType="cibei.entity.User">
+        INSERT INTO users (id, openid, phone, password, nickname, avatar_url, created_at, last_login)
+        VALUES (#{id}, #{openid}, #{phone}, #{password}, #{nickname}, #{avatarUrl}, #{createdAt}, #{lastLogin})
+    </insert>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="String" resultMap="UserResultMap">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
+    <!-- 根据 openid 查询 -->
+    <select id="selectByOpenid" parameterType="String" resultMap="UserResultMap">
+        SELECT * FROM users WHERE openid = #{openid}
+    </select>
+
+    <!-- 根据手机号查询 -->
+    <select id="selectByPhone" parameterType="String" resultMap="UserResultMap">
+        SELECT * FROM users WHERE phone = #{phone}
+    </select>
+
+    <!-- 查询所有用户 -->
+    <select id="selectAll" resultMap="UserResultMap">
+        SELECT * FROM users ORDER BY created_at DESC
+    </select>
+
+    <!-- 更新用户信息 -->
+    <update id="update" parameterType="cibei.entity.User">
+        UPDATE users
+        <set>
+            <if test="nickname  != null">nickname   = #{nickname},</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+            <if test="lastLogin != null">last_login = #{lastLogin},</if>
+            <if test="phone     != null">phone      = #{phone},</if>
+            <if test="password  != null">password   = #{password},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteById" parameterType="String">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+</mapper>
